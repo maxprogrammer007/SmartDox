@@ -28,7 +28,12 @@ st.set_page_config(
 load_dotenv()
 
 # Backend API configuration
+# For Streamlit Cloud: Set in Secrets section
+# For local: Use .env file or environment variable
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+
+# Set request timeout for cloud deployments
+REQUEST_TIMEOUT = 30
 
 # Session state initialization
 if "user_id" not in st.session_state:
@@ -136,9 +141,14 @@ def signup_user(name, email, mobile, password):
                 "email": email,
                 "mobile": mobile,
                 "password": password
-            }
+            },
+            timeout=REQUEST_TIMEOUT
         )
         return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "Request timed out. Backend service may be loading."}
+    except requests.exceptions.ConnectionError:
+        return {"error": f"Cannot connect to backend: {API_BASE_URL}"}
     except Exception as e:
         return {"error": str(e)}
 
@@ -147,9 +157,14 @@ def login_user(email, password):
     try:
         response = requests.post(
             f"{API_BASE_URL}/login",
-            json={"email": email, "password": password}
+            json={"email": email, "password": password},
+            timeout=REQUEST_TIMEOUT
         )
         return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "Request timed out. Backend service may be loading."}
+    except requests.exceptions.ConnectionError:
+        return {"error": f"Cannot connect to backend: {API_BASE_URL}"}
     except Exception as e:
         return {"error": str(e)}
 
@@ -160,9 +175,14 @@ def upload_tender(file, user_id):
         response = requests.post(
             f"{API_BASE_URL}/upload-tender",
             files=files,
-            params={"user_id": user_id}
+            params={"user_id": user_id},
+            timeout=REQUEST_TIMEOUT
         )
         return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "Request timed out. Please try again."}
+    except requests.exceptions.ConnectionError:
+        return {"error": f"Cannot connect to backend: {API_BASE_URL}"}
     except Exception as e:
         return {"error": str(e)}
 
@@ -173,28 +193,45 @@ def evaluate_bidder(file, lang="en"):
         response = requests.post(
             f"{API_BASE_URL}/evaluate-bidder",
             files=files,
-            params={"lang": lang}
+            params={"lang": lang},
+            timeout=REQUEST_TIMEOUT
         )
         return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "Request timed out. Please try again."}
+    except requests.exceptions.ConnectionError:
+        return {"error": f"Cannot connect to backend: {API_BASE_URL}"}
     except Exception as e:
         return {"error": str(e)}
 
 def get_file_history(user_id):
     """Retrieve file upload history"""
     try:
-        response = requests.get(f"{API_BASE_URL}/history/{user_id}")
+        response = requests.get(
+            f"{API_BASE_URL}/history/{user_id}",
+            timeout=REQUEST_TIMEOUT
+        )
         return response.json()
+    except requests.exceptions.Timeout:
+        return []
+    except requests.exceptions.ConnectionError:
+        return []
     except Exception as e:
-        return {"error": str(e)}
+        return []
 
 def chat_with_bot(message):
     """Send message to chatbot"""
     try:
         response = requests.post(
             f"{API_BASE_URL}/chat",
-            json={"message": message}
+            json={"message": message},
+            timeout=REQUEST_TIMEOUT
         )
         return response.json()
+    except requests.exceptions.Timeout:
+        return {"reply": "Request timed out. Please try again."}
+    except requests.exceptions.ConnectionError:
+        return {"reply": f"Cannot connect to backend: {API_BASE_URL}"}
     except Exception as e:
         return {"reply": f"Error: {str(e)}"}
 

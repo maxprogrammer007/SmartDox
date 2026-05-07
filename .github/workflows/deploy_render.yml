@@ -15,7 +15,7 @@ jobs:
       - name: Trigger Render deployment
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_SERVICE_ID: srv-d7udbol7vvec73e5fjt0
         run: |
           if [ -z "$RENDER_API_KEY" ] || [ -z "$RENDER_SERVICE_ID" ]; then
             echo "RENDER_API_KEY and RENDER_SERVICE_ID must be set in repo secrets"

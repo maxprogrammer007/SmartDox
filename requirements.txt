@@ -1,25 +1,21 @@
-# Streamlit Core
-streamlit==1.35.0
+# SmartDOX v2.0 - Frontend-Only Tender Evaluation Platform
+# Updated: 2024 - No Backend Server Required
+# All processing is done locally on your machine
 
-# API & HTTP
-requests==2.31.0
-
-# Data Processing
-pandas==2.1.4
-numpy==1.24.3
+# Core UI Framework
+streamlit>=1.28.0
 
 # Document Processing
-PyMuPDF==1.24.2
-pytesseract==0.3.10  # Optional: Requires Tesseract-OCR system package (see INSTALL_TESSERACT.md)
-Pillow==10.0.1
+PyMuPDF>=1.23.0  # PDF text extraction
+Pillow>=10.0.0  # Image handling and OCR support
+pytesseract>=0.3.10  # OCR for scanned PDFs (optional - requires Tesseract-OCR)
 
-# Environment Management
-python-dotenv==1.0.0
+# Translation & Language Support
+deep-translator>=1.11.4  # Google Translate API (free, no key required)
 
-# Additional Utilities
-deep-translator==1.11.4
+# Data Processing & Analysis
+pandas>=2.0.0
+numpy>=1.24.0
 
-# Optional: Uncomment below if you want to support more document formats
-# python-pptx==0.6.21  # For PowerPoint files
-# openpyxl==3.1.2      # For Excel files
-# docx2pdf==1.5        # For Word to PDF conversion
+# Utilities
+python-dotenv>=1.0.0

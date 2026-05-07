@@ -1,4 +1,4 @@
-#SmartDOX
+**SmartDOX**
 
 AI-Powered Smart Tender Evaluation Platform with Verified Document Intelligence and Multilingual Assistive System
 

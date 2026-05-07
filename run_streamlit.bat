@@ -18,21 +18,14 @@ if errorlevel 1 (
 echo [✓] Python found
 echo.
 
-REM Check if requirements are installed
-pip list | findstr /i "streamlit" >nul
+echo [!] Installing required packages from requirements_streamlit.txt and backend\requirements.txt
+pip install -r requirements_streamlit.txt -r backend\requirements.txt
 if errorlevel 1 (
-    echo [!] Dependencies not installed
-    echo Installing required packages...
-    pip install -r requirements_streamlit.txt
-    if errorlevel 1 (
-        echo Error: Failed to install dependencies
-        pause
-        exit /b 1
-    )
-    echo [✓] Dependencies installed
-) else (
-    echo [✓] Dependencies found
+    echo Error: Failed to install dependencies
+    pause
+    exit /b 1
 )
+echo [✓] Dependencies installed
 
 echo.
 echo [!] Make sure:

@@ -4,11 +4,17 @@ from datetime import datetime
 import pytz
 from fastapi import FastAPI, UploadFile, File, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
-import fitz  # PyMuPDF
 import pytesseract
 from PIL import Image
 from groq import Groq
 from dotenv import load_dotenv
+
+try:
+    import fitz  # PyMuPDF
+    PYMUPDF_AVAILABLE = True
+except ImportError:
+    fitz = None
+    PYMUPDF_AVAILABLE = False
 
 # --- TIMEZONE SETUP ---
 IST = pytz.timezone('Asia/Kolkata')
@@ -56,6 +62,13 @@ app.add_middleware(
 @app.get("/")
 def home():
     return {"status": "SmartDOX API is Online"}
+
+
+def _require_pymupdf():
+    if not PYMUPDF_AVAILABLE:
+        raise RuntimeError(
+            "PyMuPDF is not installed. Install backend/requirements.txt to enable PDF processing."
+        )
 
 # -----------------------------
 # AUTH ROUTES
@@ -134,6 +147,7 @@ async def process_tender(
 
         # PDF/Image Processing
         if file.filename.endswith('.pdf'):
+            _require_pymupdf()
             doc = fitz.open(stream=contents, filetype="pdf")
             for page in doc:
                 text += page.get_text()
@@ -179,6 +193,7 @@ async def evaluate_bidder(file: UploadFile = File(...), lang: str = "en"):
         contents = await file.read()
         text = ""
         if file.filename.endswith('.pdf'):
+            _require_pymupdf()
             doc = fitz.open(stream=contents, filetype="pdf")
             text = "".join([page.get_text() for page in doc])
         else:
@@ -206,4 +221,4 @@ async def evaluate_bidder(file: UploadFile = File(...), lang: str = "en"):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

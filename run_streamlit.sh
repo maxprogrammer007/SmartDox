@@ -23,19 +23,13 @@ if ! command -v pip3 &> /dev/null; then
     exit 1
 fi
 
-# Check if requirements are installed
-if ! pip3 list | grep -q "streamlit"; then
-    echo "[!] Dependencies not installed"
-    echo "Installing required packages..."
-    pip3 install -r requirements_streamlit.txt
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to install dependencies"
-        exit 1
-    fi
-    echo "[✓] Dependencies installed"
-else
-    echo "[✓] Dependencies found"
+echo "[!] Installing required packages from requirements_streamlit.txt and backend/requirements.txt"
+pip3 install -r requirements_streamlit.txt -r backend/requirements.txt
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install dependencies"
+    exit 1
 fi
+echo "[✓] Dependencies installed"
 
 echo ""
 echo "[!] Make sure:"

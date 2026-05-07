@@ -4,9 +4,15 @@ import pandas as pd
 from datetime import datetime
 import io
 from PIL import Image
-import fitz  # PyMuPDF
 import os
 from dotenv import load_dotenv
+
+try:
+    import fitz  # PyMuPDF
+    PYMUPDF_AVAILABLE = True
+except ImportError:
+    fitz = None
+    PYMUPDF_AVAILABLE = False
 
 # Optional: pytesseract for OCR (requires Tesseract-OCR system package)
 try:
@@ -81,6 +87,15 @@ def extract_text_from_file(uploaded_file):
     """Extract text from PDF or image files"""
     try:
         if uploaded_file.type == "application/pdf":
+            if not PYMUPDF_AVAILABLE:
+                st.error(
+                    "⚠️ **PyMuPDF is not installed**\n\n"
+                    "PDF processing is unavailable in this environment.\n\n"
+                    "Please install the dependencies from requirements_streamlit.txt "
+                    "or use an image upload with OCR enabled."
+                )
+                return None
+
             pdf_bytes = uploaded_file.read()
             doc = fitz.open(stream=pdf_bytes, filetype="pdf")
             text = ""

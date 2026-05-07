@@ -1,4 +1,4 @@
-SmartDOX
+#SmartDOX
 
 AI-Powered Smart Tender Evaluation Platform with Verified Document Intelligence and Multilingual Assistive System
 
@@ -190,10 +190,3 @@ Real-world government use case
 
 ✅ Working Prototype (Backend + Frontend)
 🚧 Advanced features in progress
-
-🤝 Contributors
-Shivangi Sharma
-Team SmartDOX
-📜 License
-
-This project is developed for hackathon and research purposes.

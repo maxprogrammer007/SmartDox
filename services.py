@@ -369,7 +369,7 @@ Always ask clarifying questions if needed to provide better assistance."""
         
         # Call GROQ API
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",  # Current supported model
+            model="openai/gpt-oss-20b",  # Current supported model
             messages=messages,
             temperature=0.7,
             max_tokens=1024,
@@ -406,7 +406,7 @@ def get_tender_advice(tender_type, company_info=None):
         """
         
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="openai/gpt-oss-20b",
             messages=[
                 {
                     "role": "system",
@@ -456,7 +456,7 @@ def analyze_bid_with_ai(bidder_data, tender_criteria):
         """
         
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="openai/gpt-oss-20b",
             messages=[
                 {
                     "role": "system",

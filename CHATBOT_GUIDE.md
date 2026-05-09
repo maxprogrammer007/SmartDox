@@ -71,7 +71,7 @@ Click any of the quick action buttons to get:
 ## API Details
 
 ### GROQ Configuration
-- **Model**: `mixtral-8x7b-32768` (free tier)
+- **Model**: `llama-3.1-70b-versatile` (free tier)
 - **API Endpoint**: GROQ Cloud
 - **Free Tier Limits**: Generous for most use cases
 - **No Cost**: Free to use within tier limits

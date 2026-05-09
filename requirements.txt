@@ -17,5 +17,8 @@ deep-translator>=1.11.4  # Google Translate API (free, no key required)
 pandas>=2.0.0
 numpy>=1.24.0
 
+# AI & Chatbot
+groq>=0.4.2  # GROQ LLM API for chatbot
+
 # Utilities
 python-dotenv>=1.0.0

@@ -11,6 +11,10 @@ import os
 from pathlib import Path
 from PIL import Image
 import io
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # --- DOCUMENT PROCESSING ---
 try:
@@ -38,7 +42,10 @@ from services import (
     get_supported_languages,
     get_verdict_color,
     create_report_summary,
-    format_results_for_display
+    format_results_for_display,
+    get_chatbot_response,
+    get_tender_advice,
+    analyze_bid_with_ai
 )
 
 # ═══════════════════════════════════════════════════════════════════
@@ -261,7 +268,7 @@ with st.sidebar:
     )
 
 # Create tabs for different functions
-tab1, tab2, tab3, tab4 = st.tabs(["🏠 Dashboard", "📄 Process Tender", "👥 Evaluate Bidder", "📋 History"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Dashboard", "📄 Process Tender", "👥 Evaluate Bidder", "📋 History", "🤖 AI Chatbot"])
 
 # ───────────────────────────────────────────────────────────────────
 # TAB 1: DASHBOARD
@@ -584,6 +591,137 @@ with tab4:
             st.session_state.file_history = []
             st.success("History cleared!")
             st.rerun()
+
+# ───────────────────────────────────────────────────────────────────
+# TAB 5: AI CHATBOT
+# ───────────────────────────────────────────────────────────────────
+with tab5:
+    st.markdown("### 🤖 AI Chatbot Assistant")
+    st.markdown("Ask questions about tender evaluation, bidder assessment, compliance, and procurement best practices.")
+    
+    # Check if GROQ API key is configured
+    if not os.getenv("GROQ_API_KEY"):
+        st.warning("""
+        ⚠️ **GROQ API Key Not Configured**
+        
+        To use the chatbot, set the `GROQ_API_KEY` environment variable:
+        ```bash
+        $env:GROQ_API_KEY='your-api-key-here'
+        streamlit run app.py
+        ```
+        Or create a `.env` file in the project directory with:
+        ```
+        GROQ_API_KEY=your-api-key-here
+        ```
+        """)
+    else:
+        # Initialize chat history in session state
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+        
+        # Create two columns for layout
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.subheader("💬 Chat")
+        
+        with col2:
+            if st.button("🗑️ Clear Chat"):
+                st.session_state.chat_history = []
+                st.rerun()
+        
+        # Display chat history
+        chat_container = st.container(height=400, border=True)
+        
+        with chat_container:
+            for message in st.session_state.chat_history:
+                if message["role"] == "user":
+                    st.chat_message("user").markdown(message["content"])
+                else:
+                    st.chat_message("assistant").markdown(message["content"])
+        
+        # Input area
+        st.markdown("---")
+        
+        # Chat input
+        user_input = st.chat_input("Ask me anything about tenders, bidder evaluation, compliance...")
+        
+        if user_input:
+            # Add user message to history
+            st.session_state.chat_history.append({
+                "role": "user",
+                "content": user_input
+            })
+            
+            # Display user message
+            st.chat_message("user").markdown(user_input)
+            
+            # Get AI response
+            with st.spinner("🤔 Thinking..."):
+                # Prepare conversation history for context
+                messages_for_context = [
+                    {"role": msg["role"], "content": msg["content"]}
+                    for msg in st.session_state.chat_history[:-1]  # Exclude current message
+                ]
+                
+                response = get_chatbot_response(user_input, messages_for_context)
+            
+            # Add assistant response to history
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": response
+            })
+            
+            # Display assistant response
+            st.chat_message("assistant").markdown(response)
+        
+        # Quick action buttons
+        st.markdown("---")
+        st.markdown("### 💡 Quick Actions")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("📚 Tender Evaluation Guide"):
+                with st.spinner("📝 Generating guide..."):
+                    advice = get_tender_advice("general procurement")
+                    st.session_state.chat_history.append({
+                        "role": "user",
+                        "content": "Can you provide a tender evaluation guide?"
+                    })
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": advice
+                    })
+                    st.chat_message("assistant").markdown(advice)
+        
+        with col2:
+            if st.button("⚠️ Compliance Checklist"):
+                with st.spinner("✓ Creating checklist..."):
+                    advice = get_tender_advice("compliance and regulatory")
+                    st.session_state.chat_history.append({
+                        "role": "user",
+                        "content": "What's the compliance checklist for tender evaluation?"
+                    })
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": advice
+                    })
+                    st.chat_message("assistant").markdown(advice)
+        
+        with col3:
+            if st.button("🚩 Red Flags Guide"):
+                with st.spinner("🔍 Identifying red flags..."):
+                    advice = get_tender_advice("red flags and risk assessment")
+                    st.session_state.chat_history.append({
+                        "role": "user",
+                        "content": "What are the red flags to watch for in tender bids?"
+                    })
+                    st.session_state.chat_history.append({
+                        "role": "assistant",
+                        "content": advice
+                    })
+                    st.chat_message("assistant").markdown(advice)
 
 # ═══════════════════════════════════════════════════════════════════
 # FOOTER
